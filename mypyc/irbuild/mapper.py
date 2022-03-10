@@ -145,7 +145,7 @@ class Mapper:
         # deserialized FuncDef that lacks arguments. We won't ever
         # need to use those inside of a FuncIR, so we just make up
         # some crap.
-        if hasattr(fdef, 'arguments'):
+        if fdef.arguments:
             arg_names = [arg.variable.name for arg in fdef.arguments]
         else:
             arg_names = [name or '' for name in fdef.arg_names]
