@@ -110,6 +110,7 @@ class TransformVisitor(NodeVisitor[Node]):
         for stmt in node.body.body:
             stmt.accept(init)
 
+        assert node.arguments is not None
         new = FuncDef(node.name,
                       [self.copy_argument(arg) for arg in node.arguments],
                       self.block(node.body),
@@ -139,6 +140,7 @@ class TransformVisitor(NodeVisitor[Node]):
             return new
 
     def visit_lambda_expr(self, node: LambdaExpr) -> LambdaExpr:
+        assert node.arguments is not None
         new = LambdaExpr([self.copy_argument(arg) for arg in node.arguments],
                          self.block(node.body),
                          cast(Optional[FunctionLike], self.optional_type(node.type)))
@@ -630,6 +632,7 @@ class FuncMapInitializer(TraverserVisitor):
     def visit_func_def(self, node: FuncDef) -> None:
         if node not in self.transformer.func_placeholder_map:
             # Haven't seen this FuncDef before, so create a placeholder node.
+            assert node.arguments is not None
             self.transformer.func_placeholder_map[node] = FuncDef(
                 node.name, node.arguments, node.body, None)
         super().visit_func_def(node)

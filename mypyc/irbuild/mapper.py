@@ -128,6 +128,7 @@ class Mapper:
             ret = self.type_to_rtype(fdef.type.ret_type)
         else:
             # Handle unannotated functions
+            assert fdef.arguments is not None
             arg_types = [object_rprimitive for arg in fdef.arguments]
             arg_pos_onlys = [arg.pos_only for arg in fdef.arguments]
             # We at least know the return type for __init__ methods will be None.
@@ -145,7 +146,7 @@ class Mapper:
         # deserialized FuncDef that lacks arguments. We won't ever
         # need to use those inside of a FuncIR, so we just make up
         # some crap.
-        if hasattr(fdef, 'arguments'):
+        if fdef.arguments is not None:
             arg_names = [arg.variable.name for arg in fdef.arguments]
         else:
             arg_names = [name or '' for name in fdef.arg_names]

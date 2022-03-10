@@ -633,6 +633,7 @@ class StubGenerator(mypy.traverser.TraverserVisitor):
         self.add("%s%sdef %s(" % (self._indent, 'async ' if o.is_coroutine else '', o.name))
         self.record_name(o.name)
         args: List[str] = []
+        assert o.arguments is not None
         for i, arg_ in enumerate(o.arguments):
             var = arg_.variable
             kind = arg_.kind

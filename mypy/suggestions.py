@@ -144,6 +144,7 @@ class ArgUseFinder(TraverserVisitor):
     """
     def __init__(self, func: FuncDef, typemap: Dict[Expression, Type]) -> None:
         self.typemap = typemap
+        assert func.arguments is not None
         self.arg_types: Dict[SymbolNode, List[Type]] = {arg.variable: [] for arg in func.arguments}
 
     def visit_call_expr(self, o: CallExpr) -> None:
@@ -179,6 +180,7 @@ def get_arg_uses(typemap: Dict[Expression, Type], func: FuncDef) -> List[List[Ty
     """
     finder = ArgUseFinder(func, typemap)
     func.body.accept(finder)
+    assert func.arguments is not None
     return [finder.arg_types[arg.variable] for arg in func.arguments]
 
 
@@ -345,6 +347,7 @@ class SuggestionEngine:
         return types
 
     def get_default_arg_types(self, fdef: FuncDef) -> List[Optional[Type]]:
+        assert fdef.arguments is not None
         return [
             self.manager.all_types[arg.initializer] if arg.initializer else None
             for arg in fdef.arguments
@@ -418,6 +421,7 @@ class SuggestionEngine:
             if pnode and isinstance(pnode.node, (FuncDef, Decorator)):
                 typ = get_proper_type(pnode.node.type)
                 # FIXME: Doesn't work right with generic tyeps
+                assert node.arguments is not None
                 if isinstance(typ, CallableType) and len(typ.arg_types) == len(node.arguments):
                     # Return the first thing we find, since it probably doesn't make sense
                     # to grab things further up in the chain if an earlier parent has it.

@@ -86,6 +86,7 @@ class VariableRenameVisitor(TraverserVisitor):
         self.reject_redefinition_of_vars_in_scope()
 
         with self.enter_scope(FUNCTION), self.enter_block():
+            assert fdef.arguments is not None
             for arg in fdef.arguments:
                 name = arg.variable.name
                 # 'self' can't be redefined since it's special as it allows definition of
@@ -442,6 +443,7 @@ class LimitedVariableRenameVisitor(TraverserVisitor):
     def visit_func_def(self, fdef: FuncDef) -> None:
         self.reject_redefinition_of_vars_in_scope()
         with self.enter_scope():
+            assert fdef.arguments is not None
             for arg in fdef.arguments:
                 self.record_skipped(arg.variable.name)
             super().visit_func_def(fdef)

@@ -122,6 +122,7 @@ def transform_lambda_expr(builder: IRBuilder, expr: LambdaExpr) -> Value:
     assert isinstance(typ, CallableType)
 
     runtime_args = []
+    assert expr.arguments is not None
     for arg, arg_type in zip(expr.arguments, typ.arg_types):
         arg.variable.type = arg_type
         runtime_args.append(
@@ -467,6 +468,7 @@ def calculate_arg_defaults(builder: IRBuilder,
     still stored computed on demand).
     """
     fitem = fn_info.fitem
+    assert fitem.arguments is not None
     for arg in fitem.arguments:
         # Constant values don't get stored but just recomputed
         if arg.initializer and not is_constant(arg.initializer):

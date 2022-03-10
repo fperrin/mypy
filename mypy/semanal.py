@@ -607,6 +607,7 @@ class SemanticAnalyzer(NodeVisitor[None],
         self.statement = defn
 
         # Visit default values because they may contain assignment expressions.
+        assert defn.arguments is not None
         for arg in defn.arguments:
             if arg.initializer:
                 arg.initializer.accept(self)
@@ -980,6 +981,7 @@ class SemanticAnalyzer(NodeVisitor[None],
     def analyze_arg_initializers(self, defn: FuncItem) -> None:
         with self.tvar_scope_frame(self.tvar_scope.method_frame()):
             # Analyze default arguments
+            assert defn.arguments is not None
             for arg in defn.arguments:
                 if arg.initializer:
                     arg.initializer.accept(self)
@@ -993,6 +995,7 @@ class SemanticAnalyzer(NodeVisitor[None],
                 a.bind_function_type_variables(cast(CallableType, defn.type), defn)
             self.function_stack.append(defn)
             with self.enter(defn):
+                assert defn.arguments is not None
                 for arg in defn.arguments:
                     self.add_local(arg.variable, defn)
 
@@ -1021,6 +1024,7 @@ class SemanticAnalyzer(NodeVisitor[None],
     def check_function_signature(self, fdef: FuncItem) -> None:
         sig = fdef.type
         assert isinstance(sig, CallableType)
+        assert fdef.arguments is not None
         if len(sig.arg_types) < len(fdef.arguments):
             self.fail('Type signature has too few arguments', fdef)
             # Add dummy Any arguments to prevent crashes later.
@@ -1073,6 +1077,7 @@ class SemanticAnalyzer(NodeVisitor[None],
                 elif refers_to_fullname(d, 'functools.cached_property'):
                     dec.var.is_settable_property = True
                 self.check_decorated_function_is_method('property', dec)
+                assert dec.func.arguments is not None
                 if len(dec.func.arguments) > 1:
                     self.fail('Too many arguments', dec.func)
             elif refers_to_fullname(d, 'typing.no_type_check'):
