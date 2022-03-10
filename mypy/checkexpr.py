@@ -3586,6 +3586,7 @@ class ExpressionChecker(ExpressionVisitor[Type]):
             # See https://github.com/python/mypy/issues/9927
             return None, None
 
+        assert e.arguments is not None
         arg_kinds = [arg.kind for arg in e.arguments]
 
         if callable_ctx.is_ellipsis_args or ctx.param_spec() is not None:

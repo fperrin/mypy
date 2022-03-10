@@ -1184,6 +1184,7 @@ def gen_arg_defaults(builder: IRBuilder) -> None:
     value to the argument.
     """
     fitem = builder.fn_info.fitem
+    assert fitem.arguments is not None
     for arg in fitem.arguments:
         if arg.initializer:
             target = builder.lookup(arg.variable)

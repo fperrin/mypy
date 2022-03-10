@@ -1003,6 +1003,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
                             arg_type = self.named_generic_type('builtins.dict',
                                                                [self.str_type(),
                                                                 arg_type])
+                    assert item.arguments is not None
                     item.arguments[i].variable.type = arg_type
 
                 # Type check initialization expressions.
@@ -1049,6 +1050,7 @@ class TypeChecker(NodeVisitor[None], CheckerPluginInterface):
             self.binder = old_binder
 
     def check_default_args(self, item: FuncItem, body_is_trivial: bool) -> None:
+        assert item.arguments is not None
         for arg in item.arguments:
             if arg.initializer is None:
                 continue

@@ -64,6 +64,7 @@ class StrConv(NodeVisitor[str]):
         """
         args: List[Union[mypy.nodes.Var, Tuple[str, List[mypy.nodes.Node]]]] = []
         extra: List[Tuple[str, List[mypy.nodes.Var]]] = []
+        assert o.arguments is not None
         for arg in o.arguments:
             kind: mypy.nodes.ArgKind = arg.kind
             if kind.is_required():
@@ -131,6 +132,7 @@ class StrConv(NodeVisitor[str]):
     def visit_func_def(self, o: 'mypy.nodes.FuncDef') -> str:
         a = self.func_helper(o)
         a.insert(0, o.name)
+        assert o.arguments is not None
         arg_kinds = {arg.kind for arg in o.arguments}
         if len(arg_kinds & {mypy.nodes.ARG_NAMED, mypy.nodes.ARG_NAMED_OPT}) > 0:
             a.insert(1, f'MaxPos({o.max_pos})')

@@ -649,7 +649,7 @@ FUNCITEM_FLAGS: Final = FUNCBASE_FLAGS + [
 class FuncItem(FuncBase):
     """Base class for nodes usable as overloaded function items."""
 
-    __slots__ = ('arguments',  # Note that can be None if deserialized (type is a lie!)
+    __slots__ = ('arguments',  # Note that can be None if deserialized
                  'arg_names',  # Names of arguments
                  'arg_kinds',  # Kinds of arguments
                  'min_args',  # Minimum number of arguments
@@ -665,14 +665,14 @@ class FuncItem(FuncBase):
                  'expanded',  # Variants of function with type variables with values expanded
                  )
 
-    __deletable__ = ('arguments', 'max_pos', 'min_args')
+    __deletable__ = ('max_pos', 'min_args')
 
     def __init__(self,
                  arguments: List[Argument],
                  body: 'Block',
                  typ: 'Optional[mypy.types.FunctionLike]' = None) -> None:
         super().__init__()
-        self.arguments = arguments
+        self.arguments: Optional[List[Argument]] = arguments
         self.arg_names = [None if arg.pos_only else arg.variable.name for arg in arguments]
         self.arg_kinds: List[ArgKind] = [arg.kind for arg in self.arguments]
         self.max_pos: int = (
@@ -700,6 +700,7 @@ class FuncItem(FuncBase):
                  column: Optional[int] = None,
                  end_line: Optional[int] = None) -> None:
         super().set_line(target, column, end_line)
+        assert self.arguments is not None
         for arg in self.arguments:
             arg.set_line(self.line, self.column, self.end_line)
 
@@ -779,7 +780,7 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         ret.arg_names = data['arg_names']
         ret.arg_kinds = [ArgKind(x) for x in data['arg_kinds']]
         # Leave these uninitialized so that future uses will trigger an error
-        del ret.arguments
+        ret.arguments = None
         del ret.max_pos
         del ret.min_args
         return ret

@@ -160,6 +160,7 @@ def add_args_to_env(builder: IRBuilder,
                     base: Optional[Union[FuncInfo, ImplicitClass]] = None,
                     reassign: bool = True) -> None:
     fn_info = builder.fn_info
+    assert fn_info.fitem.arguments is not None
     if local:
         for arg in fn_info.fitem.arguments:
             rtype = builder.type_to_rtype(arg.variable.type)

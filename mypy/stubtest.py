@@ -496,6 +496,7 @@ class Signature(Generic[T]):
     @staticmethod
     def from_funcitem(stub: nodes.FuncItem) -> "Signature[nodes.Argument]":
         stub_sig: Signature[nodes.Argument] = Signature()
+        assert stub.arguments is not None
         stub_args = maybe_strip_cls(stub.name, stub.arguments)
         for stub_arg in stub_args:
             if stub_arg.kind.is_positional():
@@ -545,6 +546,7 @@ class Signature(Generic[T]):
         all_args: Dict[str, List[Tuple[nodes.Argument, int]]] = {}
         for func in map(_resolve_funcitem_from_decorator, stub.items):
             assert func is not None
+            assert func.arguments is not None
             args = maybe_strip_cls(stub.name, func.arguments)
             for index, arg in enumerate(args):
                 # For positional-only args, we allow overloads to have different names for the same
@@ -916,9 +918,11 @@ def _resolve_funcitem_from_decorator(dec: nodes.OverloadPart) -> Optional[nodes.
         ) or decorator.fullname in mypy.types.OVERLOAD_NAMES:
             return func
         if decorator.fullname == "builtins.classmethod":
+            assert func.arguments is not None
             assert func.arguments[0].variable.name in ("cls", "metacls")
             ret = copy.copy(func)
             # Remove the cls argument, since it's not present in inspect.signature of classmethods
+            assert ret.arguments
             ret.arguments = ret.arguments[1:]
             return ret
         # Just give up on any other decorators. After excluding properties, we don't run into
