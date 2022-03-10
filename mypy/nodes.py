@@ -641,7 +641,7 @@ FUNCITEM_FLAGS: Final = FUNCBASE_FLAGS + [
 class FuncItem(FuncBase):
     """Base class for nodes usable as overloaded function items."""
 
-    __slots__ = ('arguments',  # Note that can be None if deserialized (type is a lie!)
+    __slots__ = ('arguments',  # Note that items can be None if deserialized (type is a lie!)
                  'arg_names',  # Names of arguments
                  'arg_kinds',  # Kinds of arguments
                  'min_args',  # Minimum number of arguments
@@ -657,7 +657,7 @@ class FuncItem(FuncBase):
                  'expanded',  # Variants of function with type variables with values expanded
                  )
 
-    __deletable__ = ('arguments', 'max_pos', 'min_args')
+    __deletable__ = ('max_pos', 'min_args')
 
     def __init__(self,
                  arguments: List[Argument],
@@ -770,8 +770,13 @@ class FuncDef(FuncItem, SymbolNode, Statement):
         # NOTE: ret.info is set in the fixup phase.
         ret.arg_names = data['arg_names']
         ret.arg_kinds = [ArgKind(x) for x in data['arg_kinds']]
+        ret.arguments = []
+        for argname, argkind in zip(ret.arg_names, ret.arg_kinds):
+            if argname is not None:
+                ret.arguments += [Argument(Var(argname), None, None, argkind)]
+            else:
+                ret.arguments += [None]  # type: ignore[list-item]
         # Leave these uninitialized so that future uses will trigger an error
-        del ret.arguments
         del ret.max_pos
         del ret.min_args
         return ret
