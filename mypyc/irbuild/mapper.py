@@ -142,9 +142,9 @@ class Mapper:
         # the sole way that FuncDecl arguments are tracked. This is
         # generally fine except in some cases (like for computing
         # init_sig) we need to produce FuncSignatures from a
-        # deserialized FuncDef that lacks arguments. We won't ever
-        # need to use those inside of a FuncIR, so we just make up
-        # some crap.
+        # deserialized FuncDef where arguments is the empty list. We
+        # won't ever need to use those inside of a FuncIR, so we just
+        # make up some crap.
         if fdef.arguments:
             arg_names = [arg.variable.name for arg in fdef.arguments]
         else:
